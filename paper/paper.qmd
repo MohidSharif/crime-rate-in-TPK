@@ -1,10 +1,10 @@
 ---
-title: "My title"
+title: "Crime Rate in TPK"
 subtitle: "My subtitle if needed"
 author: 
   - First author
   - Another author
-thanks: "Code and data are available at: LINK."
+thanks: "Code and data are available at: https://github.com/MohidSharif/crime-rate-in-TPK."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
