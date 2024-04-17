@@ -5,7 +5,7 @@ author:
 thanks: "Code and data are available at: https://github.com/MohidSharif/crime-rate-in-TPK."
 date: today
 date-format: long
-abstract: "In this study I will investigate how crime rate has changed over the last 10 years in Thorcliffe Park Drive. After analysing the data we noticed that car thefts increased steadily until 2019, from where we started to see a drastic increase in auto thefts. Assaults and bike thefts have have retained their average over the 10 years seeing no major increase or drop in cases. Overall, we can conclude that Thorncliffe park has developed a problem relating to auto thefts that needs to be investigated, where we either see an increase of law inforcement or auto owners taking extra precautions."
+abstract: "In this study, I will investigate how the crime rate has changed over the last 10 years in Thorcliffe Park Drive. After analyzing the data we noticed that car thefts increased steadily until 2019, from where we started to see a drastic increase in auto thefts. Assaults and bike thefts have retained their average over the 10 years seeing no major increase or drop in cases. Overall, we can conclude that Thorncliffe Park has developed a problem relating to auto thefts that need to be investigated, where we either see an increase in law enforcement or auto owners taking extra precautions."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -40,34 +40,34 @@ cleaned_data <- read_csv(here::here("data/analysis_data/cleaned_data.csv"))
 
 # Introduction
 
-I have lived in Thorncliffe Park Drive (TPK) for 13 years, which feels like all my life. I have seen this community go from being a safe and friendly neighborhood to getting news of crime at least once a week. In this study I wanted to study the crime patterns in TPK and see what trends I can find over the last 10 years. I wanted to see if we can identify most common crimes and use this data to potentially lower crime rate in the community.
+I have lived in Thorncliffe Park Drive (TPK) for 13 years, which feels like all my life. I have seen this community go from being a safe and friendly neighborhood to getting news of crime at least once a week. In this study, I wanted to study the crime patterns in TPK and see what trends I can find over the last 10 years. I wanted to see if we could identify the most common crimes and use this data to potentially lower the crime rate in the community.
 
-In this study I will analyzy crime from 2014-2023. During these years I will focus on crimes relating to assault, auto thefts, and bike thefts. I will compare the data obtained over the years and see if there is any increase in any specific crime type. I will then compare that with the total crime rate to identify any overlying trends in the data.
+In this study, I will analyze crime from 2014-2023. During these years I will focus on crimes relating to assault, auto thefts, and bike thefts. I will compare the data obtained over the years and see if there is any increase in any specific crime type. I will then compare that with the total crime rate to identify any overlying trends in the data.
 
-Looking at the over crime rate in TPK, we notice that crime rate had been consistent until 2020, after which we see an increase in crime up until 2023. Analyzing the data for each crime we notice that assaults and bike thefts have seen no noticeable change in average over the last 10 years. Both of these crimes have maintained a steady average showing us that these crimes have not been the reason for crime increase in TPK over the years. Looking at auto thefts we see steady increase from 2016 until 2021 from where we see a drastic increase in car thefts in the community. We can conclude from this that car thefts have become a real problem in TPK and have caused the crime rate to increase drastically for the community.
+Looking at the crime rate in TPK, we notice that the crime rate had been consistent until 2020, after which we see an increase in crime up until 2023. Analyzing the data for each crime we notice that assaults and bike thefts have seen no noticeable change in average over the last 10 years. Both of these crimes have maintained a steady average showing us that these crimes have not been the reason for the crime increase in TPK over the years. Looking at auto thefts we see a steady increase from 2016 until 2021 from where we see a drastic increase in car thefts in the community. We can conclude from this that car thefts have become a real problem in TPK and have caused the crime rate to increase drastically for the community.
 
-The remainder of the paper is as follows. We will move onto @sec-data where I will introduce the data, where it was obtained from, how it was obtained, how we can read the data, and what information is important to us in the data set. This section will include some tables to assist in reading the data and some figures which we will use to make observations about the data. We will then more on to the @sec-model where I will define a model which I will use to make some assumptions about the data and our findings. From here we will move to the @sec-result where we will go over the results from our model and its implications. Lastly, we will conclude with the @sec-discussion, here we will discuss our findings and their implications in the real world.
+The remainder of the paper is as follows. We will move onto @sec-data where I will introduce the data, where it was obtained from, how it was obtained, how we can read the data, and what information is important to us in the data set. This section will include some tables to assist in reading the data and some figures that we will use to make observations about the data. We will then move on to the @sec-model where I will define a model which I will use to make some assumptions about the data and our findings. From here we will move to the @sec-result where we will go over the results from our model and its implications. Lastly, we will conclude with the @sec-discussion, here we will discuss our findings and their implications in the real world.
 
 
 # Data {#sec-data}
 
 We obtained our data from the City of Toronto **opendatatoronto** database portal, using the 'opendatatoronto' package [@citeopendatatoronto] and the statistical programming language **R** [@citeR]. We used the **tidyverse** package for data manipulation [@citetidyverse] and **kableExtra** for table formatting [@citekableExtra]. The header includes two lines of code **"usepackage{float}"** which allow the use of float in R markdown and the line **"floatplacement{figure}{H}"** [@citeholdposition] which keeps the tables and figures locked in the specific place where they are written in R markdown.
 
-This data set obtains information regarding crime rates of all communities in Toronto. Communities are identified using a "HOOD_ID" tag, there is data on 158 communities in this data set. The data set also contains the specific names of these communities. For each community we have the following information:
+This data set obtains information regarding the crime rates of all communities in Toronto. Communities are identified using a "HOOD_ID" tag, there is data on 158 communities in this data set. The data set also contains the specific names of these communities. For each community, we have the following information:
 
-1. Population: Pertains to population reported for each community as of 2023.
+1. Population: Pertains to the population reported for each community as of 2023.
 2. Assault: Number of reports of assaults for each community. There are 10 different assault variables for each year from 2014-2023.
-3. Auto Thefts: Number of reports of auto thefts for each community. There are 10 different Auto Thefts variables for each year from 2014-2023.
+3. Auto Thefts: Number of reports of auto thefts for each community. There are 10 different Auto Theft variables for each year from 2014-2023.
 4. Bike Thefts: Number of reports of bike thefts for each community. There are 10 different Bike Thefts variables for each year from 2014-2023
 5. Assault Rate: Rate of assault per 100,000 per year. There are 10 different assault rate variables for each year from 2014-2023.
 6. Auto Theft Rate: Rate of auto theft per 100,000 per year. There are 10 different auto theft rate variables for each year from 2014-2023.
 7. Bike Theft Rate: Rate of bike theft per 100,000 per year. There are 10 different bike theft rate variables for each year from 2014-2023.
 
-All values in the data set are numeric except for "AREA_NAME" which pertain to the name of each neighbor hood.
+All values in the data set are numeric except for "AREA_NAME" which pertains to the name of each neighborhood.
 
 ## Variables of Interest
 
-Since we are only interested in studying the crime rates in TPK, we will remove all other communities and focus on the crimes reported for this community. We then convert the data into long format by using gather on our crime variables of interest: assault, auto theft, and bike theft. We then create a new Year variable to associate with the reported numbers for each crime. Lastly, we accumulate all the crimes for each year to create a total crime number for each year.
+Since we are only interested in studying the crime rates in TPK, we will remove all other communities and focus on the crimes reported for this community. We then convert the data into a long format by using gather on our crime variables of interest: assault, auto theft, and bike theft. We then create a new Year variable to associate with the reported numbers for each crime. Lastly, we accumulate all the crimes for each year to create a total crime number for each year.
 
 @tbl-sample1 shows a sample of our data set. The table can be read as follows. During the year 2014 87 assaults, 13 auto thefts, and 10 bike thefts took place. 
 
@@ -95,7 +95,7 @@ cleaned_data |>
 
 ```
 
-@tbl-sample2 shows a second sample of our data set. The table can be read as follows. Observed a 416.2 assault rate, 62.2 auto theft rate, and a 47.8 bike theft rate.
+@tbl-sample2 shows a second sample of our data set. The table can be read as follows. Observed a 416.2 assault rate, 62.2 auto theft rate, and 47.8 bike theft rate.
 
 ```{r}
 #| label: tbl-sample2
@@ -123,7 +123,7 @@ cleaned_data |>
 
 Since the values in the table are per 100,000, we will divide these by 1000 to get a percentage for easier comprehension.
 
-Now that we understand what our data consists of and how it can be read. Lets begin visualizing our data and analyzing any trends. Looking at @fig-total-crimes we can see the total number of crimes reported for each year. The graph shows a steady increasing trend over the 10 years, however what is concerning is an increase of ~80 over the last 10 years, and even more worrysome is an increase of ~40 over the last 3 years from 2020-2023.
+Now that we understand what our data consists of and how it can be read. Let's begin visualizing our data and analyzing any trends. Looking at @fig-total-crimes we can see the total number of crimes reported for each year. The graph shows a steady increasing trend over the 10 years, however what is concerning is an increase of ~80 over the last 10 years, and even more worrisome is an increase of ~40 over the last 3 years from 2020-2023.
 
 ```{r}
 #| label: fig-total-crimes
@@ -139,7 +139,7 @@ ggplot(cleaned_data, aes(x = factor(Year), y = Total_Crime)) +
   theme_minimal()
 ```
 
-Similarly for @fig-total-crime-rate we observe the increase in crime rate which mirrors @fig-total-crimes, showing a steady increase of crime rate over the recorded 10 years. From this we can see observe an increase crime rate of ~0.4 over 10 years and an increase of ~0.25 over the last three years.
+Similarly, for @fig-total-crime-rate we observe the increase in crime rate which mirrors @fig-total-crimes, showing a steady increase in crime rate over the recorded 10 years. From this, we can observe an increase in crime rate of ~0.4 over 10 years and an increase of ~0.25 over the last three years.
 
 ```{r}
 #| label: fig-total-crime-rate
@@ -155,9 +155,9 @@ ggplot(cleaned_data, aes(x = factor(Year), y = Total_Crime_Rate/1000)) +
   theme_minimal()
 ```
 
-Now, lets move onto observing each crime separately and comparing each variable to see if we can obtain any valuable information. We will accomplish this by creating line graphs for both counts of each crime type and rate of each crime over the last 10 years. We will graph multiple lines each represending a different crime.
+Now, let's move onto observing each crime separately and comparing each variable to see if we can obtain any valuable information. We will accomplish this by creating line graphs for both counts of each crime type and the rate of each crime over the last 10 years. We will graph multiple lines each representing a different crime.
 
-@fig-crimes shows our three crime types over 10 years and how they compare to each other. From this we can observe that assaults are consistenly the most crime reported for each year. Over the last 10 years assaults show a steady increase. Bike thefts are the least reported crime with maintaining a steady average over the last 10 years. Auto thefts show a steady average similar in count to bike thefts until the year 2021, after which we see a large spike in auto thefts until 2023.
+@fig-crimes shows our three crime types over 10 years and how they compare to each other. From this, we can observe that assaults are consistently the most common crime reported for each year. Over the last 10 years, assaults have shown a steady increase. Bike thefts are the least reported crime with maintaining a steady average over the last 10 years. Auto thefts show a steady average similar in count to bike thefts until the year 2021, after which we see a large spike in auto thefts until 2023.
 
 ```{r}
 #| label: fig-crimes
@@ -210,7 +210,7 @@ We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use
 
 ### Model justification
 
-We expect a positive relationship between Year and Auto Thefts. In particular we expect that over the years there should be an increase in vehicle thefts throughout Toronto as discovered in @fig-crimes. Since this trend began three years ago, it is very likely this trend will continue to increase until steps are taken to prevent it, therefore a further positive relatioship between Year and Auto Thefts should be expected.
+We expect a positive relationship between Year and Auto Thefts. In particular, we expect that over the years there should be an increase in vehicle thefts throughout Toronto as discovered in @fig-crimes. Since this trend began three years ago, this trend will likely continue to increase until steps are taken to prevent it, therefore a further positive relationship between Year and Auto Thefts should be expected.
 
 # Results {#sec-result}
 
@@ -249,25 +249,25 @@ modelsummary::modelsummary(
 
 ## First discussion point {#sec-first-point}
 
-From this study we can conclude a few things. Crime rate has increased steadily over the last 10 years, only recently in the last 3 years, crime rate has started to increase more than expected because of an increase in auto thefts. Crime rate relating to assaults and bike thefts has also been predictably maintaining a steady average over the last 10 years.
+From this study, we can conclude a few things. The crime rate has increased steadily over the last 10 years, but only recently in the last 3 years, the crime rate has started to increase more than expected because of an increase in auto thefts. Crime rate relating to assaults and bike thefts has also been predictably maintaining a steady average over the last 10 years.
 
-Thorncliffe park has become more commonly known as a violent area, as people are encouraging others not to step outside after dark. However, from our findings this does not seem to be the case. Assaults in TPK have only gone up by a rate of ~0.4 over the last 10 years which should not result in widespead panic. Then why are people so afraid? I have been in TPK for 13 years and it is true that rumors of many assaults have spread, shootings, stabbings, drug busts, and all of names that people are aware of. This is more troublesome than hearing of a no name causing trouble as one day it could be someone you know. Knowing this people have become cautious, encouraging their children to stay inside and being careful when stepping outside. It is also true that police patrols have also become common within this community, seeing all these changes scares people and makes them question their security. 
+Thorncliffe Park has become more commonly known as a violent area, as people are encouraging others not to step outside after dark. However, from our findings, this does not seem to be the case. Assaults in TPK have only gone up by a rate of ~0.4 over the last 10 years which should not result in widespread panic. Then why are people so afraid? I have been in TPK for 13 years and rumors of many assaults have indeed spread, shootings, stabbings, drug busts, and all of the names that people are aware of. This is more troublesome than hearing of a no-name causing trouble as one day it could be someone you know. Knowing this people have become cautious, encouraging their children to stay inside and being careful when stepping outside. It is also true that police patrols have also become common within this community, seeing all these changes scares people and makes them question their security. 
 
 ## Second discussion point
 
-As for crimes relating to bike and auto thefts. There has been an evident increase in auto thefts while bike thefts have always been a low priority problem for the neighborhood. From our findings we can see that there seems to be a spike in auto thefts starting 2021. This is either due to advancement in technology making it easier for individuals to steal vehicles, or it could be that due to the increase in population and quality of vehicles in the community, this has attracted bad actors into the community looking to cause trouble. Whatever the case may be, this needs to come to the attention of law enforcement as there must be some root cause that can be looked into in efforts to stabalize the crime rate again.
+As for crimes relating to bike and auto thefts. There has been an evident increase in auto thefts while bike thefts have always been a low-priority problem for the neighborhood. From our findings, we can see that there seems to be a spike in auto thefts starting in 2021. This is either due to advancements in technology making it easier for individuals to steal vehicles or it could be that due to the increase in population and quality of vehicles in the community, this has attracted bad actors into the community looking to cause trouble. Whatever the case may be, this needs to come to the attention of law enforcement as there must be some root cause that can be looked into to stabilize the crime rate again.
 
-Law enforcement has been actively involved with drug activity in the community as there was a drug bust a few months back and active patrols through the community regularly. Due to this there has been room for other crimes to slip through in this case auto thefts which has become a huge problem for residents. Residents have begun taking precautions, such as tire locks and steering wheel locks to detur potential thief.
+Law enforcement has been actively involved with drug activity in the community as there was a drug bust a few months back and active patrols through the community regularly. Due to this, there has been room for other crimes to slip through in this case auto thefts which has become a huge problem for residents. Residents have begun taking precautions, such as tire locks and steering wheel locks to deter potential thieves.
 
-Taking into account all the above, it is evident that over the last few years residents of TPK have become scared of their own community. Being afraid to go outside in your own community is a huge issue as this can further negatively impact the community inviting other bad individuals into the community and even causing residents to move out to protect themselves and the community. Therefore, it is crucial that steps be taken to investigate the increasing crime rate in the community, even if residents are told that this is being done, this will ease the hearts of the residents to know that something is being done.
+Taking into account all the above, it is evident that over the last few years, residents of TPK have become scared of their community. Being afraid to go outside in your community is a huge issue as this can further negatively impact the community inviting other bad individuals into the community and even causing residents to move out to protect themselves and the community. Therefore, steps must be taken to investigate the increasing crime rate in the community, even if residents are told that this is being done, this will ease the hearts of the residents to know that something is being done.
 
 ## Weaknesses and next steps
 
-One of the main weaknesses of this data is that it is very limited. The current data I was able to obtain only includes a few crimes that cannot fully encapsulate the crimes that are present and emerging in the community. The leading issues in TPK pertain to drug, homicide, and thefts. However, these crimes are not present in the data set. If data for these crimes were to be added to the data set, estimating crime rates in the community would become much easier and more accurate.
+One of the main weaknesses of this data is that it is very limited. The current data I was able to obtain only includes a few crimes that cannot fully encapsulate the crimes that are present and emerging in the community. The leading issues in TPK pertain to drugs, homicide, and theft. However, these crimes are not present in the data set. If data for these crimes were to be added to the data set, estimating crime rates in the community would become much easier and more accurate.
 
-The data set currently only contains reported crimes that shows a much lower percentage of the number crimes truly present in the community. Taking into account unreported thefts, assaults, and drug activity may increase the numbers drastically.
+The data set currently only contains reported crimes that show a much lower percentage of the number of crimes truly present in the community. Taking into account unreported thefts, assaults, and drug activity may increase the numbers drastically.
 
-As for next steps we should look into obtaining crime data for all crime types and further classify our data into age groups and gender. Classifying the data further can greatly increase the quality of our findings and help further narrow down the cause of crime rate increase. By observing age groups and gender we can identify which demographic is seeing an increase in crime activity and investigate that niche.
+As for the next steps we should look into obtaining crime data for all crime types and further classify our data into age groups and gender. Classifying the data further can greatly increase the quality of our findings and help further narrow down the cause of crime rate increase. By observing age groups and gender we can identify which demographic is seeing an increase in crime activity and investigate that niche.
 
 \newpage
 
