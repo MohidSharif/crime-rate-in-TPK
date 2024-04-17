@@ -1,16 +1,17 @@
 ---
-title: "Crime Rate in TPK"
-subtitle: "My subtitle if needed"
+title: "Crime Rate in Thorncliffe Park Drive"
 author: 
-  - First author
-  - Another author
+  - Mohid Sharif
 thanks: "Code and data are available at: https://github.com/MohidSharif/crime-rate-in-TPK."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "In this study I will investigate how crime rate has changed over the last 10 years in Thorcliffe Park Drive. After analysing the data we noticed that car thefts increased steadily until 2019, from where we started to see a drastic increase in auto thefts. Assaults and bike thefts have have retained their average over the 10 years seeing no major increase or drop in cases. Overall, we can conclude that Thorncliffe park has developed a problem relating to auto thefts that needs to be investigated, where we either see an increase of law inforcement or auto owners taking extra precautions."
 format: pdf
 number-sections: true
 bibliography: references.bib
+header-includes:
+ \usepackage{float}
+ \floatplacement{figure}{H}
 ---
 
 ```{r}
@@ -19,91 +20,199 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(here)
+library(bayesplot)
+library(reshape)
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+
+# Turn off echo for all code, disables knitting code chunks
+knitr::opts_chunk$set(echo = TRUE)
+# Turn off warning messaging in knitted paper file
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+# Import needed libraries
+library(kableExtra)
+
+cleaned_data <- read_csv(here::here("data/analysis_data/cleaned_data.csv"))
 ```
 
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
+I have lived in Thorncliffe Park Drive (TPK) for 13 years, which feels like all my life. I have seen this community go from being a safe and friendly neighborhood to getting news of crime at least once a week. In this study I wanted to study the crime patterns in TPK and see what trends I can find over the last 10 years. I wanted to see if we can identify most common crimes and use this data to potentially lower crime rate in the community.
 
-The remainder of this paper is structured as follows. @sec-data....
+In this study I will analyzy crime from 2014-2023. During these years I will focus on crimes relating to assault, auto thefts, and bike thefts. I will compare the data obtained over the years and see if there is any increase in any specific crime type. I will then compare that with the total crime rate to identify any overlying trends in the data.
 
+Looking at the over crime rate in TPK, we notice that crime rate had been consistent until 2020, after which we see an increase in crime up until 2023. Analyzing the data for each crime we notice that assaults and bike thefts have seen no noticeable change in average over the last 10 years. Both of these crimes have maintained a steady average showing us that these crimes have not been the reason for crime increase in TPK over the years. Looking at auto thefts we see steady increase from 2016 until 2021 from where we see a drastic increase in car thefts in the community. We can conclude from this that car thefts have become a real problem in TPK and have caused the crime rate to increase drastically for the community.
+
+The remainder of the paper is as follows. We will move onto @sec-data where I will introduce the data, where it was obtained from, how it was obtained, how we can read the data, and what information is important to us in the data set. This section will include some tables to assist in reading the data and some figures which we will use to make observations about the data. We will then more on to the @sec-model where I will define a model which I will use to make some assumptions about the data and our findings. From here we will move to the @sec-result where we will go over the results from our model and its implications. Lastly, we will conclude with the @sec-discussion, here we will discuss our findings and their implications in the real world.
 
 
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+We obtained our data from the City of Toronto **opendatatoronto** database portal, using the 'opendatatoronto' package [@citeopendatatoronto] and the statistical programming language **R** [@citeR]. We used the **tidyverse** package for data manipulation [@citetidyverse] and **kableExtra** for table formatting [@citekableExtra]. The header includes two lines of code **"usepackage{float}"** which allow the use of float in R markdown and the line **"floatplacement{figure}{H}"** [@citeholdposition] which keeps the tables and figures locked in the specific place where they are written in R markdown.
+
+This data set obtains information regarding crime rates of all communities in Toronto. Communities are identified using a "HOOD_ID" tag, there is data on 158 communities in this data set. The data set also contains the specific names of these communities. For each community we have the following information:
+
+1. Population: Pertains to population reported for each community as of 2023.
+2. Assault: Number of reports of assaults for each community. There are 10 different assault variables for each year from 2014-2023.
+3. Auto Thefts: Number of reports of auto thefts for each community. There are 10 different Auto Thefts variables for each year from 2014-2023.
+4. Bike Thefts: Number of reports of bike thefts for each community. There are 10 different Bike Thefts variables for each year from 2014-2023
+5. Assault Rate: Rate of assault per 100,000 per year. There are 10 different assault rate variables for each year from 2014-2023.
+6. Auto Theft Rate: Rate of auto theft per 100,000 per year. There are 10 different auto theft rate variables for each year from 2014-2023.
+7. Bike Theft Rate: Rate of bike theft per 100,000 per year. There are 10 different bike theft rate variables for each year from 2014-2023.
+
+All values in the data set are numeric except for "AREA_NAME" which pertain to the name of each neighbor hood.
+
+## Variables of Interest
+
+Since we are only interested in studying the crime rates in TPK, we will remove all other communities and focus on the crimes reported for this community. We then convert the data into long format by using gather on our crime variables of interest: assault, auto theft, and bike theft. We then create a new Year variable to associate with the reported numbers for each crime. Lastly, we accumulate all the crimes for each year to create a total crime number for each year.
+
+@tbl-sample1 shows a sample of our data set. The table can be read as follows. During the year 2014 87 assaults, 13 auto thefts, and 10 bike thefts took place. 
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+#| label: tbl-sample1
+#| tbl-cap: Sample of Crimes Reported
 #| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+# Import knitr
+library(knitr)
+
+
+# Filter the data to be specific to data relating to drug txocity causes of death
+cleaned_data |> 
+  select(Year, Assaults, Auto_Thefts, Bike_Thefts) |>
+# Include 10 listings in the table
+  slice(1:8) |> 
+# Display the table with appropriate column names and format properties
+  kable(
+    col.names = c("Year", "Assaults", "Auto Thefts", "Bike Thefts"),
+    digits = 1,
+    booktabs = TRUE,
+    linesep = "") |> 
+    kable_styling(latex_options = "HOLD_position")
+
 ```
 
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+@tbl-sample2 shows a second sample of our data set. The table can be read as follows. Observed a 416.2 assault rate, 62.2 auto theft rate, and a 47.8 bike theft rate.
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: tbl-sample2
+#| tbl-cap: Sample of Crime Rates Reported
 #| echo: false
-#| warning: false
-#| message: false
 
-analysis_data <- read_csv(here::here("data/analysis_data/analysis_data.csv"))
+# Import knitr
+library(knitr)
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+
+# Filter the data to be specific to data relating to drug txocity causes of death
+cleaned_data |> 
+  select(Year, Assault_Rate, Auto_Theft_Rate, Bike_Theft_Rate) |>
+# Include 10 listings in the table
+  slice(1:8) |> 
+# Display the table with appropriate column names and format properties
+  kable(
+    col.names = c("Year", "Assault Rate", "Auto Theft Rate", "Bike Theft Rate"),
+    digits = 1,
+    booktabs = TRUE,
+    linesep = "") |> 
+    kable_styling(latex_options = "HOLD_position")
+
 ```
 
-Talk way more about it. 
+Since the values in the table are per 100,000, we will divide these by 1000 to get a percentage for easier comprehension.
+
+Now that we understand what our data consists of and how it can be read. Lets begin visualizing our data and analyzing any trends. Looking at @fig-total-crimes we can see the total number of crimes reported for each year. The graph shows a steady increasing trend over the 10 years, however what is concerning is an increase of ~80 over the last 10 years, and even more worrysome is an increase of ~40 over the last 3 years from 2020-2023.
+
+```{r}
+#| label: fig-total-crimes
+#| fig-cap: Number of Crimes per year
+#| echo: false
 
 
+# Create a bar graph for the total number of deaths
+ggplot(cleaned_data, aes(x = factor(Year), y = Total_Crime)) +
+  geom_bar(stat = "identity", fill= '#1FF17D')+
+  labs(x = "Year",
+       y = "Crime Count") +
+  theme_minimal()
+```
 
-# Model
+Similarly for @fig-total-crime-rate we observe the increase in crime rate which mirrors @fig-total-crimes, showing a steady increase of crime rate over the recorded 10 years. From this we can see observe an increase crime rate of ~0.4 over 10 years and an increase of ~0.25 over the last three years.
 
-The goal of our modelling strategy is twofold. Firstly,...
+```{r}
+#| label: fig-total-crime-rate
+#| fig-cap: Rate of Crimes per year
+#| echo: false
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+
+# Create a bar graph for the total number of deaths
+ggplot(cleaned_data, aes(x = factor(Year), y = Total_Crime_Rate/1000)) +
+  geom_bar(stat = "identity", fill= '#C77CFF')+
+  labs(x = "Year",
+       y = "Crime Rate") +
+  theme_minimal()
+```
+
+Now, lets move onto observing each crime separately and comparing each variable to see if we can obtain any valuable information. We will accomplish this by creating line graphs for both counts of each crime type and rate of each crime over the last 10 years. We will graph multiple lines each represending a different crime.
+
+@fig-crimes shows our three crime types over 10 years and how they compare to each other. From this we can observe that assaults are consistenly the most crime reported for each year. Over the last 10 years assaults show a steady increase. Bike thefts are the least reported crime with maintaining a steady average over the last 10 years. Auto thefts show a steady average similar in count to bike thefts until the year 2021, after which we see a large spike in auto thefts until 2023.
+
+```{r}
+#| label: fig-crimes
+#| fig-cap: Ccount of Each Crime Per Year
+#| echo: false
+
+
+ggplot(cleaned_data, aes(x=Year)) + 
+  geom_line(aes(y=Assaults, color="Assaults")) + 
+  geom_line(aes(y=Auto_Thefts, color="Auto Thefts")) +
+  geom_line(aes(y=Bike_Thefts, color="Bike Thefts")) +
+  labs(x = "Year",
+       y = "Count") +
+  theme_minimal()
+```
+
+@fig-crimes-rate mirrors our @fig-crimes but shows crime rates rather than their count. We can see that crime rates show the same trends observed in our @fig-crimes.
+
+```{r}
+#| label: fig-crimes-rate
+#| fig-cap: Crimes per year
+#| echo: false
+
+
+ggplot(cleaned_data, aes(x=Year)) + 
+  geom_line(aes(y=Assault_Rate/1000, color="Assault Rate")) + 
+  geom_line(aes(y=Auto_Theft_Rate/1000, color="Auto Theft Rate")) +
+  geom_line(aes(y=Bike_Theft_Rate/1000, color="Bike Theft Rate")) +
+  labs(x = "Year",
+       y = "Count") +
+  theme_minimal()
+```
+
+
+# Model {#sec-model}
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+Define $autothefts_i$ as the count of vehicles stolen in Toronto in a specified Year.
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+\begin{align*}
+\text{autothefts}_i | \lambda_i &\sim \text{Poisson}(\lambda_i) \\
+\lambda_i &= \exp(\alpha + \text{Year}_i\\
+\alpha &\sim \text{Normal}(0, 2.5) \\
+\text{Yearr} &\sim \text{Normal}(0, 1) \\
+\end{align*}
 
 We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
 
 
 ### Model justification
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+We expect a positive relationship between Year and Auto Thefts. In particular we expect that over the years there should be an increase in vehicle thefts throughout Toronto as discovered in @fig-crimes. Since this trend began three years ago, it is very likely this trend will continue to increase until steps are taken to prevent it, therefore a further positive relatioship between Year and Auto Thefts should be expected.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
-# Results
+# Results {#sec-result}
 
 Our results are summarized in @tbl-modelresults.
 
@@ -136,82 +245,29 @@ modelsummary::modelsummary(
 ```
 
 
-
-
-# Discussion
+# Discussion {#sec-discussion}
 
 ## First discussion point {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+From this study we can conclude a few things. Crime rate has increased steadily over the last 10 years, only recently in the last 3 years, crime rate has started to increase more than expected because of an increase in auto thefts. Crime rate relating to assaults and bike thefts has also been predictably maintaining a steady average over the last 10 years.
+
+Thorncliffe park has become more commonly known as a violent area, as people are encouraging others not to step outside after dark. However, from our findings this does not seem to be the case. Assaults in TPK have only gone up by a rate of ~0.4 over the last 10 years which should not result in widespead panic. Then why are people so afraid? I have been in TPK for 13 years and it is true that rumors of many assaults have spread, shootings, stabbings, drug busts, and all of names that people are aware of. This is more troublesome than hearing of a no name causing trouble as one day it could be someone you know. Knowing this people have become cautious, encouraging their children to stay inside and being careful when stepping outside. It is also true that police patrols have also become common within this community, seeing all these changes scares people and makes them question their security. 
 
 ## Second discussion point
 
-## Third discussion point
+As for crimes relating to bike and auto thefts. There has been an evident increase in auto thefts while bike thefts have always been a low priority problem for the neighborhood. From our findings we can see that there seems to be a spike in auto thefts starting 2021. This is either due to advancement in technology making it easier for individuals to steal vehicles, or it could be that due to the increase in population and quality of vehicles in the community, this has attracted bad actors into the community looking to cause trouble. Whatever the case may be, this needs to come to the attention of law enforcement as there must be some root cause that can be looked into in efforts to stabalize the crime rate again.
+
+Law enforcement has been actively involved with drug activity in the community as there was a drug bust a few months back and active patrols through the community regularly. Due to this there has been room for other crimes to slip through in this case auto thefts which has become a huge problem for residents. Residents have begun taking precautions, such as tire locks and steering wheel locks to detur potential thief.
+
+Taking into account all the above, it is evident that over the last few years residents of TPK have become scared of their own community. Being afraid to go outside in your own community is a huge issue as this can further negatively impact the community inviting other bad individuals into the community and even causing residents to move out to protect themselves and the community. Therefore, it is crucial that steps be taken to investigate the increasing crime rate in the community, even if residents are told that this is being done, this will ease the hearts of the residents to know that something is being done.
 
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+One of the main weaknesses of this data is that it is very limited. The current data I was able to obtain only includes a few crimes that cannot fully encapsulate the crimes that are present and emerging in the community. The leading issues in TPK pertain to drug, homicide, and thefts. However, these crimes are not present in the data set. If data for these crimes were to be added to the data set, estimating crime rates in the community would become much easier and more accurate.
 
-\newpage
+The data set currently only contains reported crimes that shows a much lower percentage of the number crimes truly present in the community. Taking into account unreported thefts, assaults, and drug activity may increase the numbers drastically.
 
-\appendix
-
-# Appendix {-}
-
-
-# Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
-
-
+As for next steps we should look into obtaining crime data for all crime types and further classify our data into age groups and gender. Classifying the data further can greatly increase the quality of our findings and help further narrow down the cause of crime rate increase. By observing age groups and gender we can identify which demographic is seeing an increase in crime activity and investigate that niche.
 
 \newpage
 

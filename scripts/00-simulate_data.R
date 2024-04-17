@@ -10,10 +10,18 @@
 
 #### Workspace setup ####
 library(tidyverse)
-# [...UPDATE THIS...]
 
 #### Simulate data ####
-# [...ADD CODE HERE...]
+# Set the seed for reproducibility
+set.seed(93)
 
+# Simulate data
+crimes <- runif(n = 100, min = 0, max = 200)
 
+# Create the simulated data frame
+simulated_data <- data.frame(
+  Crimes = crimes
+)
 
+### Save simulated data ###
+write_csv(simulated_data, "~/crime-rate-in-TPK/data/simulated_data.csv")

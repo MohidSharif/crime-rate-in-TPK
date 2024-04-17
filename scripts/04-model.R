@@ -13,18 +13,41 @@ library(tidyverse)
 library(rstanarm)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+analysis_data <- read_csv(here::here("data/analysis_data/cleaned_data.csv"))
 
 ### Model data ####
-first_model <-
+first_model <- 
   stan_glm(
-    formula = flying_time ~ length + width,
+    formula = Year ~ Auto_Thefts,
     data = analysis_data,
-    family = gaussian(),
+    family = poisson(link = "log"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
+    seed = 93
+  )
+
+second_model <- 
+  stan_glm(
+    formula = Year ~ Assaults,
+    data = analysis_data,
+    family = poisson(link = "log"),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 93
+  )
+
+### Model data ####
+third_model <- 
+  stan_glm(
+    formula = Year ~ Bike_Thefts,
+    data = analysis_data,
+    family = poisson(link = "log"),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 93
   )
 
 
@@ -33,5 +56,16 @@ saveRDS(
   first_model,
   file = "models/first_model.rds"
 )
+
+saveRDS(
+  second_model,
+  file = "models/second_model.rds"
+)
+
+saveRDS(
+  third_model,
+  file = "models/third_model.rds"
+)
+
 
 
